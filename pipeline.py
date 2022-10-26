@@ -9,4 +9,4 @@ if __name__ == "__main__":
 
     nbai = Nbai()
 
-    nbai.nba_matches_df = nbai.get_data(config["SOCCER_DATABASE"]["url"])
+    nbai.nba_matches_df = nbai.get_data(config["NBA_DATABASE"]["url"])
