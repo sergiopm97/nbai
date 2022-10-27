@@ -11,6 +11,10 @@ class Nbai:
 
     def __init__(self) -> None:
         self.nba_matches_df = pd.DataFrame
+        self.selected_columns_df = pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
         return pd.read_csv(url)
+
+    def select_columns(self, nba_matches: pd.DataFrame, columns: list) -> pd.DataFrame:
+        return nba_matches[columns]
