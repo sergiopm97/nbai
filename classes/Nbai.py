@@ -11,10 +11,14 @@ class Nbai:
 
     def __init__(self) -> None:
         self.nba_matches_df = pd.DataFrame
+        self.selected_sample = pd.DataFrame
         self.selected_columns_df = pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
         return pd.read_csv(url)
+
+    def select_sample(self, nba_matches: pd.DataFrame, season: str) -> pd.DataFrame:
+        return nba_matches[nba_matches[season] >= 1980]
 
     def select_columns(self, nba_matches: pd.DataFrame, columns: list) -> pd.DataFrame:
         return nba_matches[columns]
