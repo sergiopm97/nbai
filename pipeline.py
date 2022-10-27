@@ -19,3 +19,7 @@ if __name__ == "__main__":
         ast.literal_eval(config["COLUMNS"]["features"])
         + ast.literal_eval(config["COLUMNS"]["targets"]),
     )
+
+    nbai.finished_matches_df = nbai.drop_unfinished_matches(
+        nbai.selected_columns_df, ast.literal_eval(config["COLUMNS"]["targets"])
+    )
