@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import pickle
 
 
 class Nbai:
@@ -21,6 +23,7 @@ class Nbai:
             pd.DataFrame,
             pd.DataFrame,
         ]
+        self.X_train_scaled, self.X_test_scaled = pd.DataFrame, pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
         return pd.read_csv(url)
@@ -52,3 +55,16 @@ class Nbai:
         X = nba_matches.drop(targets, axis=1)
         y = nba_matches[targets]
         return train_test_split(X, y, test_size=0.20, random_state=42)
+
+    def scale_features(
+        self, features_train: pd.DataFrame, features_test: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        scaler = StandardScaler().fit(features_train)
+        features_train_scaled = pd.DataFrame(
+            data=scaler.transform(features_train), columns=[features_train.columns]
+        )
+        features_test_scaled = pd.DataFrame(
+            data=scaler.transform(features_test), columns=[features_test.columns]
+        )
+        pickle.dump(scaler, open("predictors/scaler.pkl", "wb"))
+        return features_train_scaled, features_test_scaled

@@ -59,3 +59,7 @@ if __name__ == "__main__":
         ast.literal_eval(config["COLUMNS"]["targets"])
         + ast.literal_eval(config["COLUMNS"]["generated_targets"]),
     )
+
+    nbai.X_train_scaled, nbai.X_test_scaled = nbai.scale_features(
+        nbai.X_train, nbai.X_test
+    )
