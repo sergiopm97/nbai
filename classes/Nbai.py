@@ -25,8 +25,16 @@ class Nbai:
         return nba_matches[columns]
 
     def drop_unfinished_matches(
-        self, nba_games: pd.DataFrame, scores: list
+        self, nba_matches: pd.DataFrame, scores: list
     ) -> pd.DataFrame:
-        return nba_games[
-            (nba_games[scores[0]].notna()) & (nba_games[scores[1]].notna())
+        return nba_matches[
+            (nba_matches[scores[0]].notna()) & (nba_matches[scores[1]].notna())
         ]
+
+    def generate_winner_column(self, home_score: int, away_score: int) -> int:
+        if home_score > away_score:
+            return 0
+        return 1
+
+    def generate_total_points(self, home_score: int, away_score: int) -> int:
+        return home_score + away_score
