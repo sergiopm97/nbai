@@ -12,6 +12,8 @@ if __name__ == "__main__":
     config["COLUMNS"] = {
         "features": ["elo1_pre", "elo2_pre", "elo_prob1", "elo_prob2", "quality"],
         "targets": ["score1", "score2"],
+        "generated_targets": ["total_points", "winner"],
+        "sample_filter": "season",
     }
 
     with open("config/config.ini", "w") as config_file:

@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 class Nbai:
@@ -14,6 +15,12 @@ class Nbai:
         self.selected_sample = pd.DataFrame
         self.selected_columns_df = pd.DataFrame
         self.finished_matches_df = pd.DataFrame
+        self.X_train, self.X_test, self.y_train, self.y_test = [
+            pd.DataFrame,
+            pd.DataFrame,
+            pd.DataFrame,
+            pd.DataFrame,
+        ]
 
     def get_data(self, url: str) -> pd.DataFrame:
         return pd.read_csv(url)
@@ -38,3 +45,10 @@ class Nbai:
 
     def generate_total_points(self, home_score: int, away_score: int) -> int:
         return home_score + away_score
+
+    def perform_train_test_split(
+        self, nba_matches: pd.DataFrame, targets: list
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        X = nba_matches.drop(targets, axis=1)
+        y = nba_matches[targets]
+        return train_test_split(X, y, test_size=0.20, random_state=42)
