@@ -1,3 +1,4 @@
+import ssl
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -28,6 +29,7 @@ class Nbai:
         self.X_train_scaled, self.X_test_scaled = pd.DataFrame, pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
+        ssl._create_default_https_context = ssl._create_unverified_context
         return pd.read_csv(url)
 
     def select_sample(self, nba_matches: pd.DataFrame, season: str) -> pd.DataFrame:
