@@ -63,3 +63,11 @@ if __name__ == "__main__":
     nbai.X_train_scaled, nbai.X_test_scaled = nbai.scale_features(
         nbai.X_train, nbai.X_test
     )
+
+    nbai.train_winner_model(
+        nbai.X_train_scaled,
+        nbai.y_train,
+        nbai.X_test_scaled,
+        nbai.y_test,
+        ast.literal_eval(config["COLUMNS"]["generated_targets"])[1],
+    )

@@ -1,7 +1,10 @@
+import ssl
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import pickle
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, roc_auc_score, precision_score, f1_score
 
 
 class Nbai:
@@ -26,6 +29,7 @@ class Nbai:
         self.X_train_scaled, self.X_test_scaled = pd.DataFrame, pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
+        ssl._create_default_https_context = ssl._create_unverified_context
         return pd.read_csv(url)
 
     def select_sample(self, nba_matches: pd.DataFrame, season: str) -> pd.DataFrame:
@@ -68,3 +72,39 @@ class Nbai:
         )
         pickle.dump(scaler, open("predictors/scaler.pkl", "wb"))
         return features_train_scaled, features_test_scaled
+
+    def train_winner_model(
+        self,
+        features_train: pd.DataFrame,
+        targets_train: pd.DataFrame,
+        features_test: pd.DataFrame,
+        targets_test: pd.DataFrame,
+        winner_column: str,
+    ) -> pd.DataFrame.to_csv:
+        winner_model = LogisticRegression(random_state=42)
+        winner_model.fit(features_train, targets_train[winner_column])
+        train_predictions = winner_model.predict(features_train)
+        test_predictions = winner_model.predict(features_test)
+        accuracy_train = accuracy_score(targets_train[winner_column], train_predictions)
+        accuracy_test = accuracy_score(targets_test[winner_column], test_predictions)
+        roc_auc_train = roc_auc_score(
+            targets_train[winner_column],
+            winner_model.predict_proba(features_train)[:, 1],
+        )
+        roc_auc_test = roc_auc_score(
+            targets_test[winner_column], winner_model.predict_proba(features_test)[:, 1]
+        )
+        precision_train = precision_score(
+            targets_train[winner_column], train_predictions
+        )
+        precision_test = precision_score(targets_test[winner_column], test_predictions)
+        f1_train = f1_score(targets_train[winner_column], train_predictions)
+        f1_test = f1_score(targets_test[winner_column], test_predictions)
+        model_metrics = {
+            "metric": ["accuracy", "roc_auc", "precision", "f1"],
+            "train": [accuracy_train, roc_auc_train, precision_train, f1_train],
+            "test": [accuracy_test, roc_auc_test, precision_test, f1_test],
+        }
+        pickle.dump(winner_model, open("predictors/winner/model.pkl", "wb"))
+        model_metrics_df = pd.DataFrame(model_metrics)
+        return model_metrics_df.to_csv("predictors/winner/metrics.csv")
