@@ -27,6 +27,7 @@ class Nbai:
             pd.DataFrame,
         ]
         self.X_train_scaled, self.X_test_scaled = pd.DataFrame, pd.DataFrame
+        self.matches_by_date = pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
         ssl._create_default_https_context = ssl._create_unverified_context
@@ -108,3 +109,8 @@ class Nbai:
         pickle.dump(winner_model, open("predictors/winner/model.pkl", "wb"))
         model_metrics_df = pd.DataFrame(model_metrics)
         return model_metrics_df.to_csv("predictors/winner/metrics.csv")
+
+    def get_matches_by_date(
+        self, nba_matches: pd.DataFrame, date_column: str, date: str
+    ) -> pd.DataFrame:
+        return nba_matches[nba_matches[date_column] == date]
