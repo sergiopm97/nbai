@@ -1,10 +1,11 @@
+import pickle
 import ssl
+
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, f1_score, precision_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-import pickle
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, roc_auc_score, precision_score, f1_score
 
 
 class Nbai:
@@ -29,6 +30,9 @@ class Nbai:
         self.X_train_scaled, self.X_test_scaled = pd.DataFrame, pd.DataFrame
         self.matches_by_date = pd.DataFrame
         self.scaled_features_to_predict = pd.DataFrame
+        self.matches_probabilities = pd.DataFrame
+        self.matches_context = pd.DataFrame
+        self.matches_predictions = pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
         ssl._create_default_https_context = ssl._create_unverified_context
@@ -121,3 +125,16 @@ class Nbai:
     ) -> pd.DataFrame:
         scaled_features = scaler.transform(features)
         return pd.DataFrame(scaled_features, columns=features.columns)
+
+    def predict_matches_winner(
+        self, features: pd.DataFrame, model: LogisticRegression
+    ) -> pd.DataFrame:
+        return pd.DataFrame(
+            data=model.predict_proba(features.values),
+            columns=["home_win_proba", "away_win_proba"],
+        )
+
+    def generate_predictions(
+        self, context: pd.DataFrame, probabilities: pd.DataFrame
+    ) -> pd.DataFrame:
+        return pd.concat([context, probabilities], axis=1)

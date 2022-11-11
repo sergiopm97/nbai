@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException
-from classes import Nbai
-import configparser
 import ast
+import configparser
 import pickle
 
+from fastapi import FastAPI, HTTPException
+
+from classes import Nbai
 
 config = configparser.ConfigParser()
 config.read("config/config.ini")
@@ -31,6 +32,8 @@ def get_predictions_by_date(date: str) -> dict:
         nbai.matches_by_date, ast.literal_eval(config["COLUMNS"]["features"])
     ).dropna()
 
+    matches_index = nbai.selected_columns_df.index.to_list()
+
     if nbai.matches_by_date.empty:
         return HTTPException(
             status_code=404,
@@ -43,3 +46,23 @@ def get_predictions_by_date(date: str) -> dict:
     nbai.scaled_features_to_predict = nbai.scale_features_to_predict(
         nbai.selected_columns_df, features_scaler
     )
+
+    winner_model = pickle.load(open("predictors/winner/model.pkl", "rb"))
+
+    nbai.matches_probabilities = nbai.predict_matches_winner(
+        nbai.scaled_features_to_predict, winner_model
+    )
+
+    nbai.matches_context = (
+        nbai.nba_matches_df.iloc[matches_index][
+            ast.literal_eval(config["COLUMNS"]["context"])
+        ]
+        .reset_index()
+        .drop("index", axis=1)
+    )
+
+    nbai.matches_predictions = nbai.generate_predictions(
+        nbai.matches_context, nbai.matches_probabilities
+    )
+
+    return nbai.matches_predictions.to_dict(orient="records")
