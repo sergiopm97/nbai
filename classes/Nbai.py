@@ -28,6 +28,7 @@ class Nbai:
         ]
         self.X_train_scaled, self.X_test_scaled = pd.DataFrame, pd.DataFrame
         self.matches_by_date = pd.DataFrame
+        self.scaled_features_to_predict = pd.DataFrame
 
     def get_data(self, url: str) -> pd.DataFrame:
         ssl._create_default_https_context = ssl._create_unverified_context
@@ -114,3 +115,9 @@ class Nbai:
         self, nba_matches: pd.DataFrame, date_column: str, date: str
     ) -> pd.DataFrame:
         return nba_matches[nba_matches[date_column] == date]
+
+    def scale_features_to_predict(
+        self, features: pd.DataFrame, scaler: StandardScaler
+    ) -> pd.DataFrame:
+        scaled_features = scaler.transform(features)
+        return pd.DataFrame(scaled_features, columns=features.columns)
