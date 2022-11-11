@@ -14,6 +14,8 @@ if __name__ == "__main__":
         "targets": ["score1", "score2"],
         "generated_targets": ["total_points", "winner"],
         "sample_filter": "season",
+        "date": "date",
+        "context": ["date", "team1", "team2"],
     }
 
     with open("config/config.ini", "w") as config_file:
